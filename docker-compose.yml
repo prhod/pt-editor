@@ -1,0 +1,89 @@
+version: '3.6'
+
+services:
+  minio:
+    image: minio/minio:latest
+    restart: always
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ACCESS_KEY: "public"
+      MINIO_SECRET_KEY: "transport"
+    volumes:
+      - "./shared_volumes/minio:/data"
+    command: "server /data"
+
+  minio-init:
+    image: minio/mc:latest # same than minio
+    container_name: minio-init
+    depends_on:
+      - minio
+    links:
+      - minio:minio
+    restart: on-failure
+    entrypoint: "/bin/sh"
+    volumes:
+      - "./tests/fixtures:/fixtures"
+    command: -c "
+      /usr/bin/mc config host add myminio http://minio:9000 public transport &&
+      /usr/bin/mc mb --ignore-existing myminio/bucket &&
+      /usr/bin/mc cp /fixtures/dummy.txt myminio/bucket/dummy.txt
+
+  # main database
+  postgres:
+    image: postgres:12
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "--username", "pteditor", "--dbname", "pteditor"]
+      interval: "10s"
+      timeout: "5s"
+      retries: "5"
+    environment:
+      POSTGRES_DB: "pteditor"
+      POSTGRES_USER: "pteditor"
+      POSTGRES_PASSWORD: "pteditor"
+    volumes:
+      - "./shared_volumes/pgdata:/var/lib/postgresql/data"
+      - "./database/init_db_1_struct.sql:/docker-entrypoint-initdb.d/init_db_1_struct.sql"
+      - "./database/init_db_2_content.sql:/docker-entrypoint-initdb.d/init_db_2_content.sql"
+
+  # database tool
+  schemaspy:
+    image: schemaspy/schemaspy:latest # not critical, only for dev: keep 'latest'
+    depends_on:
+      - postgres
+    links:
+      - postgres:postgres
+    restart: on-failure
+    user: root
+    volumes:
+      - "./shared_volumes/schemaspy:/output"
+    command: "/usr/local/bin/schemaspy -t 'pgsql' -host 'postgres' -db 'pteditor' -u 'pteditor' -p 'pteditor'"
+
+  # web server for schemaspy
+  schemaspy-web:
+    image: nginx:latest # not critical, only for dev: keep 'latest'
+    depends_on:
+      - schemaspy
+    restart: on-failure
+    ports:
+      - "8532:80"
+    volumes:
+      - "./shared_volumes/schemaspy:/usr/share/nginx/html"
+
+  # web API for main database
+  postgrest:
+    image: postgrest/postgrest:v7.0.0
+    depends_on:
+      - postgres
+    links:
+      - postgres:postgres
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      PGRST_DB_URI: "postgres://pteditor:pteditor@postgres:5432/pteditor"
+      PGRST_DB_SCHEMA: "public"
