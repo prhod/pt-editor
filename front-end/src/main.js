@@ -5,6 +5,9 @@ import router from './router'
 import store from './store'
 
 Vue.config.productionTip = false
+/* eslint-disable no-unused-vars */
+var _ = require("lodash");
+/* eslint-enable no-unused-vars */
 
 new Vue({
   vuetify,
@@ -12,3 +15,8 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
+if (window.Cypress) {
+  // only available during E2E tests
+  window.__store__ = store;
+}
