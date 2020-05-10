@@ -3,6 +3,7 @@ version: '3.6'
 services:
   minio:
     image: minio/minio:latest
+    container_name: pteditor_minio    
     restart: always
     ports:
       - "9000:9000"
@@ -32,7 +33,7 @@ services:
   # main database
   postgres:
     image: postgres:12
-    container_name: postgres
+    container_name: pteditor_postgres
     restart: always
     ports:
       - "5432:5432"
@@ -77,6 +78,7 @@ services:
   # web API for main database
   postgrest:
     image: postgrest/postgrest:v7.0.0
+    container_name: pteditor_postgrest  
     depends_on:
       - postgres
     links:
@@ -87,3 +89,4 @@ services:
     environment:
       PGRST_DB_URI: "postgres://pteditor:pteditor@postgres:5432/pteditor"
       PGRST_DB_SCHEMA: "public"
+      PGRST_DB_ANON_ROLE: "pteditor"
