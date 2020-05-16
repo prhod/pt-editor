@@ -1,5 +1,5 @@
 <template>
-  <v-layout row justify-center>
+  <v-layout row justify-center >
     <v-dialog v-model="dialog" persistent max-width="800px">
       <v-card>
         <v-card-title class="pa-0">
@@ -43,6 +43,9 @@
 
 <script>
 // import { mapGetters, mapState } from "vuex";
+/* eslint-disable no-unused-vars */
+var _ = require("lodash");
+/* eslint-enable no-unused-vars */
 
 export default {
   name: "DataSourceEdit",
@@ -63,6 +66,7 @@ export default {
   },
   watch: {
     dataSource: function(newValue) {
+        console.log("watch");
       if (newValue) {
         this.newDataSource = _.cloneDeepWith(newValue);
       }

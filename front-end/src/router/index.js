@@ -2,6 +2,11 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 
+/* eslint-disable no-unused-vars */
+var _ = require("lodash");
+/* eslint-enable no-unused-vars */
+
+
 Vue.use(VueRouter)
 
   const routes = [
