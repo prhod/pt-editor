@@ -11,7 +11,16 @@
           </v-btn>
         </v-card-title>
       </v-card>
-      <v-data-table :headers="headers" :items="dataSources" class="elevation-1"></v-data-table>
+      <v-data-table :headers="headers" :items="dataSources" class="elevation-1">
+        <template v-slot:item.name="{ item }">
+          <router-link
+            :to="{
+              name: 'data_source',
+              params: { data_source_id: item.id }
+            }"
+          >{{ item.name }}</router-link>
+        </template>
+      </v-data-table>
       <DataSourceEdit
         :dialog="showEditModal"
         :dataSource="dataSourceInEdition"

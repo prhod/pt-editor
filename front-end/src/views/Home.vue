@@ -1,7 +1,11 @@
 <template>
   <div class="home">
     <Menu/>
-    <DataSources/>
+      <v-layout row flat>
+        <v-flex xs12>
+          <DataSources></DataSources>
+        </v-flex>
+      </v-layout>
   </div>
 </template>
 

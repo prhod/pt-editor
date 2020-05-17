@@ -1,9 +1,11 @@
 start:
+	$(info Starting stack)
 	docker-compose up --detach postgrest 
 
 stop:
+	$(info Stopping stack)
 	docker-compose down --remove-orphan
-	@docker network rm pt-editor_default 2> /dev/null
+	# @docker network rm pt-editor_default 2> /dev/null
 
 wipe:
 	$(info Removing persistent data)
