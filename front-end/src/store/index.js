@@ -5,11 +5,15 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    current_data_source_id: "",
     dataSources: [],
     networks: [],
     lines: []
   },
   mutations: {
+    setDataSourceId(state, payload) {
+      state.current_data_source_id = payload;
+    },
     setDataSources(state, payload) {
       state.dataSources = payload;
     },
@@ -55,9 +59,9 @@ export default new Vuex.Store({
           console.log(err);
         });
     },
-    getNetworks({ commit }, data_source_id) {
+    getNetworks({ state, commit }) {
       let postgrest = "http://localhost:3000/";
-      fetch(postgrest + `networks?data_source_id=eq.${data_source_id}`, {
+      fetch(postgrest + `networks?data_source_id=eq.${state.current_data_source_id}`, {
         method: "GET"
       })
         .then(response => response.json())
@@ -81,6 +85,26 @@ export default new Vuex.Store({
           console.log(err);
         });
     },    
+    updateObjectProperty({ dispatch }, payload) {
+      let postgrest = "http://localhost:3000/";
+      let obj = {};
+      obj[payload.property] = payload.value;
+      fetch(postgrest + `${payload.collection}?id=eq.${payload.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(obj),
+        headers: {
+          "Content-Type": "application/json",
+          Prefer: "return=representation"
+        }
+      })
+        .then(response => response.json())
+        .then(function () {
+          dispatch("getNetworks");
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
   },
   modules: {
   }

@@ -28,7 +28,7 @@ services:
     command: -c "
       /usr/bin/mc config host add myminio http://minio:9000 public transport &&
       /usr/bin/mc mb --ignore-existing myminio/bucket &&
-      /usr/bin/mc cp /fixtures/dummy.txt myminio/bucket/dummy.txt
+      /usr/bin/mc cp /fixtures/dummy.txt myminio/bucket/dummy.txt"
 
   # main database
   postgres:

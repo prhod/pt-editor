@@ -31,7 +31,7 @@
 var _ = require("lodash");
 /* eslint-enable no-unused-vars */
 
-import { mapState, mapActions } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 
 export default {
   name: "DataSources",
@@ -41,9 +41,11 @@ export default {
     ...mapState(["networks", "lines"]),
   },
   methods: {
+    ...mapMutations(["setDataSourceId"]),
     ...mapActions(["getNetworks", "getLines"]),
     initView: function() {
-      this.getNetworks(this.$route.params.data_source_id);
+      this.setDataSourceId(this.$route.params.data_source_id);
+      this.getNetworks();
       this.getLines(this.$route.params.data_source_id);
     },
   },
