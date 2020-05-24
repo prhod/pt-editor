@@ -20,3 +20,14 @@ CREATE TABLE IF NOT EXISTS lines (
     code text null,
     name text null
 );
+
+
+-- DB Vues to be used with Postgrest
+CREATE OR REPLACE VIEW data_sources_detailed AS
+    SELECT ds.id, ds.name, ds.osm_area_id,
+        count(n.id) as networks_count, 
+        count(l.id) as lines_count
+    FROM data_sources ds
+        LEFT JOIN networks n on n.data_source_id = ds.id
+        LEFT JOIN lines l on l.network_id = n.id
+    GROUP BY ds.id, ds.name, ds.osm_area_id;

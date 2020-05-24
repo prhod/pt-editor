@@ -6,6 +6,21 @@
           <v-card-title class="py-2">PT Editor</v-card-title>
         </v-card>
       </v-toolbar-title>
+      <v-menu open-on-hover nudge-bottom offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            v-on="on"
+            dark
+            icon
+            style="width:100px"
+            :to="{
+              name: 'Home'
+            }"
+          >
+            DataSources
+          </v-btn>
+        </template>
+      </v-menu>      
     </v-app-bar>
   </div>
 </template>

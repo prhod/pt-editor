@@ -4,6 +4,7 @@ import vuetify from './plugins/vuetify';
 import router from './router'
 import store from './store'
 
+import 'vue-material-design-icons/styles.css';
 
 new Vue({
   vuetify,

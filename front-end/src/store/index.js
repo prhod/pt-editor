@@ -27,7 +27,7 @@ export default new Vuex.Store({
   actions: {
     getDataSources({ commit }) {
       let postgrest = "http://localhost:3000/";
-      fetch(postgrest + `data_sources`, {
+      fetch(postgrest + `data_sources_detailed`, {
         method: "GET"
       })
         .then(response => response.json())
@@ -99,7 +99,12 @@ export default new Vuex.Store({
       })
         .then(response => response.json())
         .then(function () {
-          dispatch("getNetworks");
+          if (payload.collection == "networks") {
+            dispatch("getNetworks");
+          } 
+          if (payload.collection == "data_sources") {
+            dispatch("getDataSources");
+          } 
         })
         .catch(err => {
           console.log(err);
