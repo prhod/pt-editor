@@ -11,3 +11,7 @@ INSERT INTO lines (data_source_id, network_id, code, name) values
     '1', 
     'line 1'
 );
+
+
+INSERT INTO data_sources (name, bbox) values 
+('Data set 2', '{{13.068776734359162, 35.15625}, {-13.068776734355879, -35.15624999999997}}');

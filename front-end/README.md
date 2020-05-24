@@ -20,5 +20,8 @@ npm run build
 npm run lint
 ```
 
+### Icons
+New Icons can be found here : https://dev.materialdesignicons.com/icons
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).

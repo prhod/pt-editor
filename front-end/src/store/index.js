@@ -5,6 +5,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    MapBoxToken: "pk.eyJ1IjoicHJob2QiLCJhIjoiY2o2Njh6dGl0MHV6azJxcXhmaTdhdnJ0dyJ9.mSLMtT6tbazdkZGcu3-gCA",
+    MapGlStyle: "mapbox://styles/mapbox/streets-v11",
     current_data_source_id: "",
     dataSources: [],
     networks: [],

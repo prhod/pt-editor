@@ -37,14 +37,28 @@
               name: 'data_source',
               params: { data_source_id: item.id }
             }"
-          ><PencilIcon class="icon-2x" /></router-link>
+          >
+            <PencilIcon class="icon-2x" />
+          </router-link>
           <router-link
             :to="{
               name: 'networks',
               params: { data_source_id: item.id }
             }"
-          ><TrainCarIcon class="icon-2x" :click="showBboxMap = true"/></router-link>
-          <EarthIcon class="icon-2x" />
+          >
+            <TrainCarIcon class="icon-2x" />
+          </router-link>
+          <v-btn
+            class="pa-0 ma-0"
+            data-cy="clientds-btn-delete"
+            @click="onEditBBox(item);currentDataSourceID = item.id; showBboxMap = true;"
+            color="grey darken-2"
+            text
+            icon
+            dark
+          >
+            <EarthIcon class="icon-2x" />
+          </v-btn>
         </template>
       </v-data-table>
       <DataSourceEdit
@@ -54,9 +68,7 @@
         v-on:save="doSaveDataSource"
       />
     </v-container>
-    <!-- <v-dialog v-model="showBboxMap" persistent max-width="800px">
-      <BBoxMap />
-    </v-dialog> -->
+    <BBoxGlMap :active="showBboxMap" :bbox="bboxInEdition" @close="onMapClose" @update="onMapChange"/>
   </div>
 </template>
 
@@ -67,10 +79,11 @@ var _ = require("lodash");
 
 import { mapState, mapActions } from "vuex";
 import DataSourceEdit from "@/components/DataSourceEdit.vue";
-// import BBoxMap from "@/components/BBoxMap.vue";
-import TrainCarIcon from 'vue-material-design-icons/TrainCar.vue';
-import PencilIcon from 'vue-material-design-icons/Pencil.vue';
-import EarthIcon from 'vue-material-design-icons/Earth.vue';
+import BBoxGlMap from "@/components/BBoxGlMap.vue";
+
+import TrainCarIcon from "vue-material-design-icons/TrainCar.vue";
+import PencilIcon from "vue-material-design-icons/Pencil.vue";
+import EarthIcon from "vue-material-design-icons/Earth.vue";
 
 export default {
   name: "DataSources",
@@ -78,24 +91,26 @@ export default {
     DataSourceEdit,
     TrainCarIcon,
     PencilIcon,
-    EarthIcon
-    // BBoxMap
+    EarthIcon,
+    BBoxGlMap
   },
   data: () => ({
     showEditModal: false,
     showBboxMap: false,
-    dataSourceInEdition: {},
+    dataSourceInEdition: false,
+    bboxInEdition: false,
+    currentDataSourceID: false,
     headers: [
       { text: "id", value: "id", align: "center" },
       { text: "Name", value: "name", align: "center" },
-      { text: "osm_area_id", value: "osm_area_id", align: "center" },
+      { text: "bbox", value: "bbox", align: "center" },
       { text: "Networks", value: "networks_count", align: "center" },
       { text: "Lines", value: "lines_count", align: "center" },
       { text: "Actions", value: "actions", align: "center" }
     ]
   }),
   computed: {
-    ...mapState(["dataSources"]),
+    ...mapState(["dataSources"])
   },
   methods: {
     ...mapActions(["getDataSources", "saveDataSource", "updateObjectProperty"]),
@@ -109,6 +124,22 @@ export default {
     doSaveDataSource: function(payload) {
       this.saveDataSource(payload);
       this.showEditModal = false;
+    },
+    onEditBBox: function(data_source) {
+      this.currentDataSourceID = data_source.id;
+      this.bboxInEdition = data_source.bbox;
+    },
+    onMapChange: function(payload) {
+      this.showBboxMap = false;
+      this.updateObjectProperty({
+        collection: 'data_sources',
+        id: this.currentDataSourceID,
+        property: 'bbox',
+        value: `{{${payload[0][0]}, ${payload[0][1]}}, {${payload[1][0]}, ${payload[1][1]}}}`
+      });
+    },
+    onMapClose: function() {
+      this.showBboxMap = false;
     }
   },
   created() {
@@ -127,7 +158,7 @@ export default {
   height: 2em;
   width: 2em;
 }
- 
+
 .material-design-icon.icon-2x > .material-design-icon__svg {
   height: 2em;
   width: 2em;

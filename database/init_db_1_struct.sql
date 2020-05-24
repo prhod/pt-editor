@@ -1,9 +1,7 @@
 CREATE TABLE IF NOT EXISTS data_sources (
     id int primary key generated always as identity,
     name text not null,
-    osm_area_id text null,
-    center geometry (POINT, 4326),
-    area geometry (MULTIPOLYGON, 4326)
+    bbox float[2][2]
 );
 
 CREATE TABLE IF NOT EXISTS networks (
@@ -24,10 +22,10 @@ CREATE TABLE IF NOT EXISTS lines (
 
 -- DB Vues to be used with Postgrest
 CREATE OR REPLACE VIEW data_sources_detailed AS
-    SELECT ds.id, ds.name, ds.osm_area_id,
+    SELECT ds.id, ds.name, ds.bbox,
         count(n.id) as networks_count, 
         count(l.id) as lines_count
     FROM data_sources ds
         LEFT JOIN networks n on n.data_source_id = ds.id
         LEFT JOIN lines l on l.network_id = n.id
-    GROUP BY ds.id, ds.name, ds.osm_area_id;
+    GROUP BY ds.id, ds.name, ds.bbox;
